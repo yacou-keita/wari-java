@@ -20,7 +20,6 @@ public class InMemoryTransactionAccountRepository implements TransactionAccountR
 
     @Override
     public void save(TransactionAccount request) {
-        
         _transactionAccounts.put(null, request);
     }
     

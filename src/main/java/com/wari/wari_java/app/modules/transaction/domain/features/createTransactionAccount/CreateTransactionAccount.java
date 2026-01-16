@@ -1,9 +1,10 @@
 package com.wari.wari_java.app.modules.transaction.domain.features.createTransactionAccount;
 
+import com.wari.wari_java.app.core.domain.features.Command;
 import com.wari.wari_java.app.modules.transaction.domain.entities.TransactionAccount;
 import com.wari.wari_java.app.modules.transaction.domain.repositories.TransactionAccountRepository;
 
-public class CreateTransactionAccount {
+public class CreateTransactionAccount implements Command<TransactionAccount> {
 
    private final TransactionAccountRepository _transactionAccountRepository;
 
@@ -17,3 +18,4 @@ public class CreateTransactionAccount {
     }
     
 }
+

@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.wari.wari_java.app.core.domain.features.Command;
 import com.wari.wari_java.app.modules.transaction.data_source.inMemories.repositories.InMemoryTransactionAccountRepository;
 import com.wari.wari_java.app.modules.transaction.domain.entities.TransactionAccount;
 import com.wari.wari_java.app.modules.transaction.domain.features.createTransactionAccount.CreateTransactionAccount;
@@ -14,7 +15,7 @@ import com.wari.wari_java.app.modules.transaction.domain.repositories.Transactio
 
 public class TestCreateTransactionAccount {
 
-    CreateTransactionAccount createTransactionAccount;
+    Command<TransactionAccount> createTransactionAccount;
     TransactionAccountRepository transactionAccountRepository;
 
     @BeforeEach
