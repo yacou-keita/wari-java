@@ -7,31 +7,36 @@ import java.util.UUID;
 import com.wari.wari_java.app.core.domain.entities.DomainEntity;
 import com.wari.wari_java.app.modules.transaction.domain.valueObjects.Balance;
 
-public class TransactionAccount extends DomainEntity  {
-    private final Owner owner;
+final public class TransactionAccount extends DomainEntity  {
+    private  Owner owner;
     private final Balance balance;
+    private final String phoneNumber;
 
     private TransactionAccount(
         UUID id,
-        Owner owner,
         Balance balance,
+        String phoneNumber,
         LocalDateTime createdAt,
         Optional<LocalDateTime> updateAt,
         Optional<LocalDateTime> deletedAt
         ){
             super(id,createdAt,updateAt,deletedAt);
-            this.owner = owner;
             this.balance = balance;
+            this.phoneNumber = phoneNumber;
         }
 
     public static TransactionAccount create(
         UUID id,
-        Owner owner,
         Balance balance,
+        String phoneNumber,
         LocalDateTime createdAt,
         Optional<LocalDateTime> updateAt,
         Optional<LocalDateTime> deletedAt
     ) {
-       return new TransactionAccount(id, owner, balance, createdAt, updateAt, deletedAt);
+       return new TransactionAccount(id, balance, phoneNumber ,createdAt, updateAt, deletedAt);
+    }
+
+    public void addOwner(User userAuthenticated) {
+        this.owner  = userAuthenticated.createOwner();
     }
 }

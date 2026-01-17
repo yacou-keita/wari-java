@@ -1,5 +1,7 @@
 package com.wari.wari_java.transaction.features;
 
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
@@ -21,12 +23,14 @@ import com.wari.wari_java.app.modules.transaction.domain.features.createTransact
 import com.wari.wari_java.app.modules.transaction.domain.gateway.AuthenticatorGatway;
 import com.wari.wari_java.app.modules.transaction.domain.repositories.TransactionAccountRepository;
 import com.wari.wari_java.app.modules.transaction.domain.valueObjects.Balance;
+import com.wari.wari_java.app.modules.transaction.domain.exception.UserNotAuthenticate;
 
 public class TestCreateTransactionAccount {
 
     Command<TransactionAccount> createTransactionAccount;
     TransactionAccountRepository transactionAccountRepository;
     AuthenticatorGatway authenticatorGatway = new InMeomryAuthenticatorGatway();
+    User userYacouKeita;
 
     @BeforeEach
     void setUp() {
@@ -36,12 +40,12 @@ public class TestCreateTransactionAccount {
             this.authenticatorGatway
             );
 
-       User userAuthenticated = User.create(
+        userYacouKeita = User.create(
         UUID.randomUUID(),
         "keita",
         "yacou",
         "yacou@gmail.com", 
-        1234, 
+        "1234", 
         LocalDateTime.now(), 
         Optional.empty(), 
         Optional.empty());
@@ -50,13 +54,14 @@ public class TestCreateTransactionAccount {
     @Test
     void shouldCreateTransactionAccountWhenUserIsAuthenticate() {
 
-        Owner owner = Owner.create(UUID.randomUUID(),"keita","yacou","yacou@gmail.com");
+        authenticatorGatway.authenticate(this.userYacouKeita);
+
         Balance balance = new Balance(BigDecimal.valueOf(0),"cfa");
 
         TransactionAccount transactionAccount = TransactionAccount.create(
             UUID.randomUUID(),
-            owner,
             balance,
+            "0700000034",
             LocalDateTime.now(),
             Optional.empty(),
             Optional.empty()
@@ -67,6 +72,27 @@ public class TestCreateTransactionAccount {
         List<TransactionAccount> transactionAccounts = this.transactionAccountRepository.findAll();
 
         assertTrue(transactionAccounts.contains(transactionAccount));
+    }
+
+    @Test
+    void shouldFailToCreateTransactionAccountWhenUserNotAuthenticate(){
+
+        Balance balance = new Balance(BigDecimal.valueOf(0),"cfa");
+
+         TransactionAccount transactionAccount = TransactionAccount.create(
+            UUID.randomUUID(),
+            balance,
+            "0700000034",
+            LocalDateTime.now(),
+            Optional.empty(),
+            Optional.empty()
+        );
+
+        
+        assertThrows(
+            UserNotAuthenticate.class,
+            () -> this.createTransactionAccount.execute(transactionAccount)
+            );
     }
 
 }

@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import com.wari.wari_java.app.core.domain.entities.DomainEntity;
 
-public class User extends DomainEntity {
+final public class User extends DomainEntity {
     
     private final String firstName;
     private final String lastName;
@@ -49,5 +49,9 @@ public class User extends DomainEntity {
             createdAt, 
             updatedAt, 
             deletedAt);
+    }
+
+    public Owner createOwner() {
+        return Owner.create(id, firstName, lastName, email);
     }
 }
