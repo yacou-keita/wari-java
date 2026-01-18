@@ -11,18 +11,20 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
 
 import com.wari.wari_java.app.core.domain.features.Command;
 import com.wari.wari_java.app.modules.transaction.data_source.inMemories.gateway.InMeomryAuthenticatorGatway;
 import com.wari.wari_java.app.modules.transaction.data_source.inMemories.repositories.InMemoryTransactionAccountRepository;
-import com.wari.wari_java.app.modules.transaction.domain.entities.Owner;
 import com.wari.wari_java.app.modules.transaction.domain.entities.TransactionAccount;
 import com.wari.wari_java.app.modules.transaction.domain.entities.User;
 import com.wari.wari_java.app.modules.transaction.domain.features.createTransactionAccount.CreateTransactionAccount;
 import com.wari.wari_java.app.modules.transaction.domain.gateway.AuthenticatorGatway;
 import com.wari.wari_java.app.modules.transaction.domain.repositories.TransactionAccountRepository;
 import com.wari.wari_java.app.modules.transaction.domain.valueObjects.Balance;
+import com.wari.wari_java.app.modules.transaction.domain.exception.PhoneNumberAlreadyExists;
 import com.wari.wari_java.app.modules.transaction.domain.exception.UserNotAuthenticate;
 
 public class TestCreateTransactionAccount {
@@ -31,6 +33,7 @@ public class TestCreateTransactionAccount {
     TransactionAccountRepository transactionAccountRepository;
     AuthenticatorGatway authenticatorGatway = new InMeomryAuthenticatorGatway();
     User userYacouKeita;
+    TransactionAccount transactionAccount;
 
     @BeforeEach
     void setUp() {
@@ -39,6 +42,16 @@ public class TestCreateTransactionAccount {
             this.transactionAccountRepository,
             this.authenticatorGatway
             );
+
+        Balance balance = new Balance(BigDecimal.valueOf(0),"cfa");
+        transactionAccount = TransactionAccount.create(
+            UUID.randomUUID(),
+            balance,
+            "0700000034",
+            LocalDateTime.now(),
+            Optional.empty(),
+            Optional.empty()
+        );
 
         userYacouKeita = User.create(
         UUID.randomUUID(),
@@ -51,21 +64,11 @@ public class TestCreateTransactionAccount {
         Optional.empty());
     }
 
+
     @Test
     void shouldCreateTransactionAccountWhenUserIsAuthenticate() {
 
         authenticatorGatway.authenticate(this.userYacouKeita);
-
-        Balance balance = new Balance(BigDecimal.valueOf(0),"cfa");
-
-        TransactionAccount transactionAccount = TransactionAccount.create(
-            UUID.randomUUID(),
-            balance,
-            "0700000034",
-            LocalDateTime.now(),
-            Optional.empty(),
-            Optional.empty()
-        );
 
         this.createTransactionAccount.execute(transactionAccount);
 
@@ -75,19 +78,20 @@ public class TestCreateTransactionAccount {
     }
 
     @Test
+    void shouldFailToCreateTransactionAccountWhenPhoneNumberAlreadyExistsAndWhenUserIsAuthenticate(){
+
+        authenticatorGatway.authenticate(this.userYacouKeita);
+
+        this.createTransactionAccount.execute(transactionAccount);
+        
+        assertThrows(
+            PhoneNumberAlreadyExists.class,
+            () -> this.createTransactionAccount.execute(transactionAccount)
+            );
+    }
+
+    @Test
     void shouldFailToCreateTransactionAccountWhenUserNotAuthenticate(){
-
-        Balance balance = new Balance(BigDecimal.valueOf(0),"cfa");
-
-         TransactionAccount transactionAccount = TransactionAccount.create(
-            UUID.randomUUID(),
-            balance,
-            "0700000034",
-            LocalDateTime.now(),
-            Optional.empty(),
-            Optional.empty()
-        );
-
         
         assertThrows(
             UserNotAuthenticate.class,

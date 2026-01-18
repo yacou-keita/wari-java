@@ -1,7 +1,6 @@
-import java.util.UUID;
+package com.wari.wari_java.app.modules.transaction.domain.exception;
 
 import com.wari.wari_java.app.core.domain.execption.DomainException;
-
 
 public class UserNotAuthenticate extends DomainException {
     

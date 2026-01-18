@@ -39,4 +39,12 @@ final public class TransactionAccount extends DomainEntity  {
     public void addOwner(User userAuthenticated) {
         this.owner  = userAuthenticated.createOwner();
     }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getPhone() {
+        return phoneNumber;
+    }
 }
